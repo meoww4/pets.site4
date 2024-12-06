@@ -1,0 +1,19 @@
+.content-container-login {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom-login {
+    width: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.container123 {
+    height: 200px;
+    color:#ffffff;
+}

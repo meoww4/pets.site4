@@ -1,0 +1,122 @@
+.pet-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 400px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+.pet-card img {
+    display: block;
+    margin: 0 auto;
+    max-height: 300px; 
+    object-fit: cover;
+    border-radius: 4px;
+}
+.pet-card .card-body {
+    flex-grow: 1;
+    padding: 10px 0;
+    font-size: 0.95rem;
+}
+.pet-card .card-body p {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+.pet-card .contact-button {
+    margin-top: auto;
+    text-align: center;
+}
+.pet-card .contact-button button {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+.card-deck {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+.card-deck .col-md-6 {
+    flex: 1 1 calc(50% - 20px);
+    max-width: 48%;
+}
+.card-deck .col-md-6 img {
+    margin-bottom: 10px;
+}
+.search-container {
+    margin: 30px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.search-container input {
+    flex: 1 1 300px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+}
+.search-container button {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+.search-box {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+.search-box input, .search-box button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.search-box button {
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+.pagination .page-item {
+    margin: 0 5px;
+}
+.pagination .page-item .page-link {
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-item.active .page-link {
+    color: white;
+    border: none;
+}
