@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Dobav() {
     const [petName, setPetName] = useState('');
-    const [chipNumber, setChipNumber] = useState('');
     const [region, setRegion] = useState('');
     const [date, setDate] = useState('');
     const [animalType, setAnimalType] = useState('');
@@ -12,57 +12,23 @@ function Dobav() {
     const [description, setDescription] = useState('');
     const [mark, setMark] = useState('');
     const [confirm, setConfirm] = useState(false);
-    const [isUserAuthorized, setIsUserAuthorized] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [errors, setErrors] = useState([]);
+    const [formValidated, setFormValidated] = useState(false);
 
-    useEffect(() => {
-        // Симуляция проверки авторизации (замените на реальный механизм проверки авторизации)
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        if (userData) {
-            setIsUserAuthorized(true);
-            setUserName(userData.userName);
-            setPhone(userData.phone);
-            setEmail(userData.email);
-        }
-    }, []);
+    const navigate = useNavigate();
 
-    const handlePetFormSubmit = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         const form = event.target;
-        const errorsList = [];
 
+        // Validate the form fields
         if (!form.checkValidity()) {
-            form.classList.add('was-validated');
+            setFormValidated(true);
             return;
         }
 
-        if (!confirm) {
-            errorsList.push('Вы должны согласиться на обработку персональных данных.');
-        }
-
-        if (errorsList.length > 0) {
-            setErrors(errorsList);
-            return;
-        }
-
+        // If all fields are valid, navigate to /search
         alert('Объявление успешно добавлено!');
-        window.location.href = 'search.html';
-    };
-
-    const handleRegistrationSubmit = (event) => {
-        event.preventDefault();
-        const form = event.target;
-
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
-
-        alert('Регистрация успешна!');
-        window.location.href = 'profile.html';
+        navigate('/search');
     };
 
     return (
@@ -70,12 +36,9 @@ function Dobav() {
             <div className="content-container-add-pet">
                 <div className="header-container">
                     <h2>Добавить объявление</h2>
-                    {!isUserAuthorized && (
-                        <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registrationModal">Зарегистрироваться</button>
-                    )}
                 </div>
 
-                <form id="petForm" className="needs-validation" onSubmit={handlePetFormSubmit} noValidate>
+                <form id="petForm" className={`needs-validation ${formValidated ? 'was-validated' : ''}`} onSubmit={handleSubmit} noValidate>
                     <div className="mb-3">
                         <label htmlFor="petName" className="form-label">Имя животного</label>
                         <input
@@ -125,10 +88,12 @@ function Dobav() {
                             id="animalType"
                             placeholder="Собака, кошка и т.д."
                             required
+                            pattern="[А-Яа-яЁё]+" 
+                            title="Только русские буквы"
                             value={animalType}
                             onChange={(e) => setAnimalType(e.target.value)}
                         />
-                        <div className="invalid-feedback">Пожалуйста, укажите вид животного.</div>
+                        <div className="invalid-feedback">Пожалуйста, укажите вид животного (только русские буквы).</div>
                     </div>
 
                     <div className="mb-3">
@@ -203,14 +168,6 @@ function Dobav() {
                         <label className="form-check-label" htmlFor="confirm">Согласие на обработку персональных данных</label>
                         <div className="invalid-feedback">Вы должны согласиться на обработку персональных данных.</div>
                     </div>
-
-                    {errors.length > 0 && (
-                        <div className="alert alert-danger">
-                            {errors.map((error, index) => (
-                                <p key={index}>{error}</p>
-                            ))}
-                        </div>
-                    )}
 
                     <div className="col-12 mt-4">
                         <button className="btn btn-primary" type="submit">Опубликовать</button>

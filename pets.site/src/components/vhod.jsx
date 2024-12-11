@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Vhod() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -15,7 +18,7 @@ function Vhod() {
         }
 
         alert('Вход успешен! Перенаправление на личный кабинет.');
-        window.location.href = 'profile.html';
+        navigate('/profile');
     };
 
     return (
