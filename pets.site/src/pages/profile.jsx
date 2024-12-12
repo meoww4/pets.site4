@@ -8,7 +8,7 @@ const Profile =  () => {
   useEffect(()=>load(),[])
   function load(){
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer CCKnpodnMd7ylx0b6jQmdmgZ1msvgVhWr3AHH5hP8CffeLp0AAIIMF35uDFAjdmkCHJVljmXhyCM69Iq");
+    myHeaders.append("Authorization", `Bearer ${localStorage.token}`);
 
 
 const requestOptions = {
