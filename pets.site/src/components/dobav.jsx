@@ -20,13 +20,11 @@ function Dobav() {
         event.preventDefault();
         const form = event.target;
 
-        // Validate the form fields
         if (!form.checkValidity()) {
             setFormValidated(true);
             return;
         }
 
-        // If all fields are valid, navigate to /search
         alert('Объявление успешно добавлено!');
         navigate('/search');
     };

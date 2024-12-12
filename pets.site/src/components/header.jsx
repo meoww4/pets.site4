@@ -1,58 +1,183 @@
-import React from 'react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from '../image/logo.jpg';
-import { Link } from 'react-router-dom';
 
-const Header = () => {
+const Login123 = () => {
+  const [user, setUser] = useState({ email: '', password: '' });
+  const [token, setToken] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser({
+      ...user,
+      [name]: value
+    });
+  };
+
+  const auth = (e) => {
+    e.preventDefault();
+    const form = document.getElementById('form');
+    if (!form.checkValidity()) {
+      e.stopPropagation();
+      form.classList.add('was-validated');
+      return;
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify(user);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    fetch("https://pets.сделай.site/api/login", requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        if (result.data) {
+          localStorage.setItem('token', result.data.token);
+          setToken(result.data.token);
+
+          setErrorMessage('');
+          alert('Вход успешен! Перенаправление на личный кабинет.');
+          navigate('/profile');
+
+          const modal = document.getElementById('exampleModal1');
+          const modalBackdrop = document.querySelector('.modal-backdrop');
+          if (modal) modal.classList.remove('show');
+          if (modalBackdrop) modalBackdrop.remove();
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = "auto";
+          document.body.style.paddingRight = "";
+        } else {
+          setErrorMessage('Неправилный адрес электронной почты или пароль');
+          document.getElementById('error').style.display = 'block';
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setErrorMessage('Произошла ошибка, попробуйте снова');
+        document.getElementById('error').style.display = 'block';
+      });
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${searchQuery}`);
+    }
+  };
+
+
+  const Header = () => {
+    return (
+      <header>
+        <nav className="navbar navbar-expand-lg navbar-light bg-">
+          <div className="container-fluid">
+            <Link to={'/'} className="navbar-brand">
+              <img src={logo} className="w-25 rounded-3" alt="logo" />
+            </Link>
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon" />
+            </button>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                  <Link to="/" className={'nav-link'} aria-current="page">Главная</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/profile" className={'nav-link'}>Личный кабинет</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/registration" className="nav-link">Регистрация</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/add_pet" className="nav-link">Добавить объявление</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/search" className="nav-link">Поиск по объявлениям</Link>
+                </li>
+              </ul>
+              <form className="d-flex align-items-center" onSubmit={handleSearch}>
+                <input
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Поиск"
+                  aria-label="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ width: '250px' }}
+                />
+                <button className="btn btn-primary me-2" type="submit">Поиск</button>
+                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                  Вход
+                </button>
+              </form>
+            </div>
+          </div>
+        </nav>
+      </header>
+    );
+  };
+
   return (
-    <header>
-      <nav className="navbar navbar-expand-lg navbar-light bg-">
-  <div className="container-fluid">
-  <Link to={'/'} className="navbar-brand">
-    <img src={logo} className="w-25 rounded-3" alt="logo"/>
-  </Link>
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span className="navbar-toggler-icon" />
-    </button>
-    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-
-        <li className="nav-item">
-          <Link  to="/" className={'nav-link'} aria-current="page">Главная</Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/profile" className={'nav-link'}>Личный кабинет</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/registration" className={"nav-link"}>Регистрация</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/login" className={"nav-link"}>Вход</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/add_pet" className={"nav-link"}>Добавить объявление</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/search" className={"nav-link"}>Поиск по объявлениям</Link>
-        </li>
-      </ul>
-      <form className="d-flex">
-        <input className="form-control me-2" type="search" list="pets" placeholder="Поиск" aria-label="Search" />
-        <button className="btn btn-primary" onclick>Поиск</button>
-        <datalist id="pets">
-          <option value="Кошка">
-          </option><option value="Собака">
-          </option><option value="Корова">
-          </option><option value="Крокодил">
-          </option><option value="Сова">
-          </option></datalist>
-      </form>
-    </div>
-  </div>
-</nav>
-
-    </header>
+    <>
+      <Header />
+      <div className="modal fade" id="exampleModal1" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="exampleModalLabel">Вход</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            </div>
+            <div className="modal-body text-start">
+              <form id="form" onSubmit={auth} noValidate>
+                <div className="mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    value={user.email}
+                    onChange={handleChange}
+                    name="email"
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="exampleInputPassword1" className="form-label">Пароль</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="exampleInputPassword1"
+                    value={user.password}
+                    onChange={handleChange}
+                    name="password"
+                    required
+                  />
+                </div>
+                <div className="mb-3 form-check">
+                  <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                  <label className="form-check-label" htmlFor="exampleCheck1">Запомнить меня</label>
+                </div>
+                <button type="submit" className="btn btn-primary btn-custom">Войти</button>
+              </form>
+              <p className='text-danger text-center' id='error' style={{ display: errorMessage ? 'block' : 'none' }}>{errorMessage}</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
-export default Header;
+export default Login123;

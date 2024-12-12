@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Dannie(props) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    alert('Вы вышли из личного кабинета.');
+    navigate('/');
+  };
+
   return (
     <div className="container mt-4">
       <h2 className="text-center text-dark">Добро пожаловать в личный кабинет!</h2>
       <p className="text-center text-dark mb-4">Здесь вы можете редактировать свои данные и управлять объявлениями.</p>
 
       <div className="row">
-        <div className="col-md-8 col-lg-6 col-xl-5">
-          <div className="card shadow-lg mb-4" style={{ borderRadius: '10px' }}>
+        <div className="content-container-login col-md-8 col-lg-6 col-xl-5">
+          
             <div className="card-body">
               <h5 className="card-title text-center text-dark">Ваши данные</h5>
               <div className="d-flex justify-content-between mb-3">
@@ -33,14 +42,20 @@ function Dannie(props) {
               </div>
               <div className="text-center">
                 <a
-                  className="btn btn-primary mt-3"
-                  style={{ borderRadius: '30px' }}
+                  className="btn btn-primary"
                   onClick={() => alert('Вы успешно отредактировали свой профиль')}
                 >
                   Редактировать профиль
                 </a>
               </div>
-            </div>
+              <div className="text-center mt-3">
+                <button
+                  className="btn btn-danger"
+                  onClick={handleLogout}
+                >
+                  Выйти
+                </button>
+              </div>
           </div>
         </div>
       </div>

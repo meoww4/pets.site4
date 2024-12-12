@@ -5,10 +5,12 @@ function Vhod() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [token, setToken] = useState('');
 
     const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const form = event.target;
 
@@ -17,8 +19,38 @@ function Vhod() {
             return;
         }
 
-        alert('Вход успешен! Перенаправление на личный кабинет.');
-        navigate('/profile');
+        try {
+            const response = await fetch('https://pets.сделай.site/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setToken(data.token);
+                setErrorMessage('');
+
+                if (rememberMe) {
+                    localStorage.setItem('authToken', data.token);
+                } else {
+                    sessionStorage.setItem('authToken', data.token);
+                }
+
+                alert('Вход успешен! Перенаправление на личный кабинет.');
+                navigate('/profile');
+            } else {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || 'Произошла ошибка. Попробуйте позже.');
+            }
+        } catch (error) {
+            setErrorMessage('Сетевая ошибка. Попробуйте позже.');
+        }
     };
 
     return (
@@ -63,19 +95,20 @@ function Vhod() {
                             type="checkbox"
                             className="form-check-input"
                             id="exampleCheck1"
-                            required
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
                         />
                         <label className="form-check-label" htmlFor="exampleCheck1">Запомнить меня</label>
-                        <div className="invalid-feedback">
-                            Вы должны согласиться с опцией "Запомнить меня".
-                        </div>
                     </div>
                     <button type="submit" className="btn btn-primary btn-custom">Войти</button>
                 </form>
+                {errorMessage && (
+                    <p className='text-danger text-center mt-3'>{errorMessage}</p>
+                )}
+                {token && (
+                    <p className='text-success text-center mt-3'>Вы успешно вошли, ваш токен: {token}</p>
+                )}
             </main>
-            <div class="container123"/>
         </div>
     );
 }
