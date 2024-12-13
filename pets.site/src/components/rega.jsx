@@ -74,7 +74,7 @@ function Rega() {
                             className="form-control"
                             id="phone"
                             pattern="^\+7\d{3}\d{3}\d{2}\d{2}$"
-                            placeholder="+799912345 67"
+                            placeholder="+79991234567"
                             required
                             value={formData.phone}
                             onChange={handleChange}

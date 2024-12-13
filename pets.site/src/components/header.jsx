@@ -56,7 +56,7 @@ const Login123 = () => {
           document.body.style.overflow = "auto";
           document.body.style.paddingRight = "";
         } else {
-          setErrorMessage('Неправилный адрес электронной почты или пароль');
+          setErrorMessage('Неправильный адрес электронной почты или пароль');
           document.getElementById('error').style.display = 'block';
         }
       })

@@ -1,29 +1,3 @@
-import собака from '../image/pets/собака.jpg';
-import кошка from '../image/pets/кошка.jpg';
-import попугай from '../image/pets/попугай.jfif';
-import свинья from '../image/pets/свинья.jpg';
-import кролик from '../image/pets/кролик.jpg';
-import коза from '../image/pets/коза.jpeg';
-import корги from '../image/pets/корги.jpg';
-import мышь from '../image/pets/мышь.jpg';
-import котик from '../image/pets/котик.jpg';
-import кошка2 from '../image/pets/кошка2.jpg';
-
-import React, { useState } from 'react';
-
-const ads = [
-    { id: 77, type: "Собака", description: "Собака рыжая, была утеряна в Красногвардейском районе", chipNumber: "do-001-spb", region: "Красногвардейский", date: "12-10-2024", image: собака },
-    { id: 14, type: "Кошка", description: "Потерялась кошка, пушистая, серая. Любит играть, ласковая.", chipNumber: "ca-001-spb", region: "Василеостровский", date: "24-03-2020", image: кошка },
-    { id: 88, type: "Попугай", description: "Попугай, зеленый, потерян в центральной части города.", chipNumber: "po-004-spb", region: "Центральный", date: "28-10-2024", image: попугай },
-    { id: 99, type: "Свинья", description: "Молодая свинья, была найдена на окраине города, в районе деревни.", chipNumber: "sv-101-spb", region: "Калининский", date: "10-11-2024", image: свинья },
-    { id: 22, type: "Кролик", description: "Белый кролик, потерян в районе Академического. Любит морковь.", chipNumber: "kr-202-spb", region: "Калининский", date: "22-10-2024", image: кролик },
-    { id: 18, type: "Коза", description: "Потерялась коза, последний раз видели в здании Московского вокзала г. Санкт-Петербург. Коза белая, пуховая.", chipNumber: "go-011-spb", region: "Центральный", date: "14-03-2022", image: коза },
-    { id: 17, type: "Собака", description: "Потерялась собака породы корги, очень любит бегать.", chipNumber: "ca-105-spb", region: "Красногвардейский", date: "15-06-2024", image: корги },
-    { id: 58, type: "Мышь", description: "Мышь серая, была утеряна в центральном районе.", chipNumber: "mo-244-spb", region: "Центральный", date: "15-06-2024", image: мышь },
-    { id: 10, type: "Котенок", description: "Маленький серый котенок, потерян в лесу.", chipNumber: "ca-551-spb", region: "Приморский", date: "15-06-2024", image: котик },
-    { id: 25, type: "Кошка", description: "Кошка черная с белыми пятнами, потерялась на выходных.", chipNumber: "ca-089-spb", region: "Выборгский", date: "22-10-2023", image: кошка2 },
-];
-
 function Poisk() {
     const [region, setRegion] = useState('');
     const [animalType, setAnimalType] = useState('');
@@ -54,6 +28,16 @@ function Poisk() {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const adsToDisplay = filteredAds.slice(startIndex, startIndex + itemsPerPage);
 
+        // Если объявлений нет
+        if (filteredAds.length === 0) {
+            return (
+                <div className="text-center mt-4">
+                    <p>Объявления не найдены</p>
+                </div>
+            );
+        }
+
+        // Отображение найденных объявлений
         return adsToDisplay.map(ad => (
             <div className="col-md-6 mb-4 pet-card" key={ad.id}>
                 <div className="card-body">
