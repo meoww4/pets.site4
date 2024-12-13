@@ -15,13 +15,13 @@ function Slide({ data, isActive }) {
   );
 }
 
-function Loader({ display }) {
-  return (
-    <div className="justify-content-center align-items-center" style={display}>
-      <div className="fs-1 text-success">...Идет загрузка</div>
+const Preloader = () => (
+  <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Загрузка...</span>
     </div>
-  );
-}
+  </div>
+);
 
 function Slider() {
   const [sliderData, setSliderData] = useState([]);
@@ -62,7 +62,11 @@ function Slider() {
   return (
     <div>
       <h2 className="text-center text-white bg-primary m-2">Найденные животные</h2>
-      <Loader display={{ display: loading ? 'flex' : 'none' }} />
+      
+      {/* Прелоадер, который появляется до загрузки данных */}
+      {loading && <Preloader />}
+
+      {/* Слайдер отображается только после загрузки данных */}
       {!loading && (
         <div
           id="carouselExampleIndicators"

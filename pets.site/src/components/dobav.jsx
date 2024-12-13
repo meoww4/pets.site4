@@ -12,6 +12,10 @@ function Dobav() {
     const [description, setDescription] = useState('');
     const [mark, setMark] = useState('');
     const [confirm, setConfirm] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
     const [formValidated, setFormValidated] = useState(false);
 
     const navigate = useNavigate();
@@ -24,9 +28,7 @@ function Dobav() {
             setFormValidated(true);
             return;
         }
-
-        alert('Объявление успешно добавлено!');
-        navigate('/search');
+  
     };
 
     return (
@@ -37,8 +39,9 @@ function Dobav() {
                 </div>
 
                 <form id="petForm" className={`needs-validation ${formValidated ? 'was-validated' : ''}`} onSubmit={handleSubmit} noValidate>
+                    {/* Поля для объявления */}
                     <div className="mb-3">
-                        <label htmlFor="petName" className="form-label">Имя животного</label>
+                        <label htmlFor="petName" className="form-label">Ваше имя</label>
                         <input
                             type="text"
                             className="form-control"
@@ -49,6 +52,21 @@ function Dobav() {
                             onChange={(e) => setPetName(e.target.value)}
                         />
                         <div className="invalid-feedback">Пожалуйста, введите имя животного.</div>
+                    </div>
+
+                    <div className="mb-3">
+                        <label htmlFor="phone" className="form-label">Телефон</label>
+                        <input
+                            type="tel"
+                            className="form-control"
+                            id="phone"
+                            pattern="^\+7\d{3}\d{3}\d{2}\d{2}$"
+                            placeholder="+79991234567"
+                            required
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                        <div className="invalid-feedback">Укажите номер телефона в правильном формате.</div>
                     </div>
 
                     <div className="mb-3">
@@ -86,12 +104,10 @@ function Dobav() {
                             id="animalType"
                             placeholder="Собака, кошка и т.д."
                             required
-                            pattern="[А-Яа-яЁё]+" 
-                            title="Только русские буквы"
                             value={animalType}
                             onChange={(e) => setAnimalType(e.target.value)}
                         />
-                        <div className="invalid-feedback">Пожалуйста, укажите вид животного (только русские буквы).</div>
+                        <div className="invalid-feedback">Пожалуйста, укажите вид животного.</div>
                     </div>
 
                     <div className="mb-3">
@@ -130,18 +146,6 @@ function Dobav() {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="mark" className="form-label">Клеймо (необязательно)</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="mark"
-                            placeholder="например, do-002-spb"
-                            value={mark}
-                            onChange={(e) => setMark(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="mb-3">
                         <label htmlFor="description" className="form-label">Описание</label>
                         <textarea
                             className="form-control"
@@ -153,6 +157,51 @@ function Dobav() {
                         />
                         <div className="invalid-feedback">Пожалуйста, предоставьте описание.</div>
                     </div>
+
+                    <div className="mb-3 form-check">
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="isRegistered"
+                            checked={isRegistered}
+                            onChange={(e) => setIsRegistered(e.target.checked)}                                       />
+                        <label className="form-check-label" htmlFor="isRegistered">
+                            Зарегистрироваться
+                        </label>
+                        <div className="invalid-feedback">Вы должны согласиться на регистрацию.</div>
+                    </div>
+
+                    {isRegistered && (
+                        <>
+                            <div className="mb-3">
+                                <label htmlFor="email" className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    id="email"
+                                    placeholder="user@user.com"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                <div className="invalid-feedback">Пожалуйста, введите корректный email.</div>
+                            </div>
+
+                            <div className="mb-3">
+                                <label htmlFor="password" className="form-label">Пароль</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    id="password"
+                                    placeholder="Введите пароль"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <div className="invalid-feedback">Пожалуйста, введите пароль.</div>
+                            </div>
+                        </>
+                    )}
 
                     <div className="mb-3 form-check">
                         <input

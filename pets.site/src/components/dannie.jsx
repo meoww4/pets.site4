@@ -1,52 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';  // Импортируем хук
+
 
 function Dannie(props) {
-  const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: props.data.name,
-    email: props.data.email,
-  });
+  const navigate = useNavigate();  // Инициализируем хук навигации
 
+  // Состояния для редактирования email и номера телефона
+  const [isEditing, setIsEditing] = useState(false);  // Флаг, показывающий, редактируем ли мы данные
+  const [email, setEmail] = useState(localStorage.getItem('email') || props.data.email || '');  // Изначально пустое значение
+  const [phone, setPhone] = useState(localStorage.getItem('phone') || props.data.phone || '');  // Изначально пустое значение
+
+  // Восстановление значений из localStorage при загрузке компонента
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedPhone = localStorage.getItem('phone');
+    
+    if (savedEmail) {
+      setEmail(savedEmail);
+    } else {
+      setEmail(props.data.email); // Если нет сохраненного значения, берем из props
+    }
+
+    if (savedPhone) {
+      setPhone(savedPhone);
+    } else {
+      setPhone(props.data.phone); // Если нет сохраненного значения, берем из props
+    }
+  }, [props.data.email, props.data.phone]); // Добавляем зависимости
+
+  // Функция для выхода из аккаунта
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('phone');
     alert('Вы вышли из личного кабинета.');
-    navigate('/');
+    navigate('/');  // Перенаправляем на главную страницу
   };
 
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
+  // Функция для сохранения изменений
+  const saveChanges = () => {
+    // Сохраняем email и phone в localStorage
+    localStorage.setItem('email', email);
+    localStorage.setItem('phone', phone);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({
-      ...formData,
-      [id]: value,
-    });
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-    fetch('https://pets.сделай.site/api/edit-profile', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert('Данные успешно обновлены!');
-          setIsEditing(false);
-        } else {
-          alert('Ошибка при обновлении данных.');
-        }
-      })
-      .catch(() => alert('Ошибка сети. Попробуйте позже.'));
+    alert('Изменения сохранены!');
+    setIsEditing(false);  // Закрываем форму редактирования
   };
 
   return (
@@ -60,26 +58,26 @@ function Dannie(props) {
             <h5 className="card-title text-center text-dark">Ваши данные</h5>
 
             {isEditing ? (
-              <form onSubmit={handleSave}>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">Имя:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+              <form onSubmit={saveChanges}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">Электронная почта:</label>
                   <input
                     type="email"
                     className="form-control"
                     id="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="phone" className="form-label">Телефон:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     required
                   />
                 </div>
@@ -88,7 +86,7 @@ function Dannie(props) {
                   <button
                     type="button"
                     className="btn btn-secondary ms-2"
-                    onClick={handleEditToggle}
+                    onClick={() => setIsEditing(false)}
                   >
                     Отмена
                   </button>
@@ -106,7 +104,11 @@ function Dannie(props) {
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <p className="text-dark" style={{ fontWeight: '600' }}>Электронная почта:</p>
-                  <p className="text-dark">{props.data.email}</p>
+                  <p className="text-dark">{email}</p>
+                </div>
+                <div className="d-flex justify-content-between mb-3">
+                  <p className="text-dark" style={{ fontWeight: '600' }}>Телефон:</p>
+                  <p className="text-dark">{phone}</p>
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <p className="text-dark" style={{ fontWeight: '600' }}>Добавленные объявления:</p>
@@ -117,7 +119,7 @@ function Dannie(props) {
                   <p className="text-dark">{props.data.countPets}</p>
                 </div>
                 <div className="text-center">
-                  <button className="btn btn-primary" onClick={handleEditToggle}>
+                  <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
                     Редактировать профиль
                   </button>
                 </div>
@@ -132,7 +134,17 @@ function Dannie(props) {
           </div>
         </div>
       </div>
-    </div>
+
+      
+
+      <div className="modal" id="modal">
+        <div className="modal-content">
+          <span className="close">×</span>
+          <h2 id="modal-title" />
+          <p id="modal-description" />
+        </div>
+      </div>
+    </div>  
   );
 }
 

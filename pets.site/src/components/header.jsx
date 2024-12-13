@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from '../image/logo.jpg';
 
@@ -7,6 +7,7 @@ const Login123 = () => {
   const [token, setToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -67,13 +68,57 @@ const Login123 = () => {
       });
   };
 
+  // Debounce function
+  const debounce = (func, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const fetchSuggestions = (query) => {
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    fetch(`https://pets.сделай.site/api/search?query=${query}`)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          setSuggestions([]);
+          return null;
+        }
+      })
+      .then((data) => {
+        if (data && data.data.orders) {
+          setSuggestions(data.data.orders);
+        } else {
+          setSuggestions([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching suggestions:", error);
+        setSuggestions([]);
+      });
+  };
+
+  const debouncedFetchSuggestions = debounce(fetchSuggestions, 1000);
+
+  const handleSearchQueryChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedFetchSuggestions(value);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?query=${searchQuery}`);
     }
   };
-
 
   const Header = () => {
     return (
@@ -111,7 +156,7 @@ const Login123 = () => {
                   placeholder="Поиск"
                   aria-label="Search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchQueryChange}
                   style={{ width: '250px' }}
                 />
                 <button className="btn btn-primary me-2" type="submit">Поиск</button>
@@ -176,6 +221,18 @@ const Login123 = () => {
           </div>
         </div>
       </div>
+      {suggestions.length > 0 && (
+        <div className="suggestions">
+          <ul>
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.id}>{suggestion.description}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {searchQuery.length >= 3 && suggestions.length === 0 && (
+        <p className="text-center mt-3">Нет результатов</p>
+      )}
     </>
   );
 };
