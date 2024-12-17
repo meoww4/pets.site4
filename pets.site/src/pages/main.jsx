@@ -24,9 +24,7 @@ const Main = () => {
     <div>
       <Slider />
       <div>
-        <h2 className="text-center text-white bg-primary m-2">
-          Карточки найденных животных
-        </h2>
+        <Two />
       </div>
       <div className="container mt-4">
         <div className="row">
@@ -37,7 +35,6 @@ const Main = () => {
           ))}
         </div>
       </div>
-      <Two />
       <Three />
     </div>
   );

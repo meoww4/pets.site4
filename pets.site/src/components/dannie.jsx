@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // Импортируем хук
-
+import { useNavigate } from 'react-router-dom';  // Импортируем хук навигации
 
 function Dannie(props) {
   const navigate = useNavigate();  // Инициализируем хук навигации
@@ -37,14 +36,34 @@ function Dannie(props) {
     navigate('/');  // Перенаправляем на главную страницу
   };
 
-  // Функция для сохранения изменений
+  // Функция для сохранения изменений и отправки их на сервер
   const saveChanges = () => {
     // Сохраняем email и phone в localStorage
     localStorage.setItem('email', email);
     localStorage.setItem('phone', phone);
 
-    alert('Изменения сохранены!');
-    setIsEditing(false);  // Закрываем форму редактирования
+    // Отправляем изменения на сервер
+    fetch('https://pets.сделай.site/api/users/email', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({ email, phone }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Ошибка при обновлении данных');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        alert('Изменения успешно сохранены!');
+        setIsEditing(false);  // Закрываем форму редактирования
+      })
+      .catch((error) => {
+        alert('Ошибка: ' + error.message);
+      });
   };
 
   return (
@@ -58,7 +77,7 @@ function Dannie(props) {
             <h5 className="card-title text-center text-dark">Ваши данные</h5>
 
             {isEditing ? (
-              <form onSubmit={saveChanges}>
+              <form onSubmit={(e) => { e.preventDefault(); saveChanges(); }}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">Электронная почта:</label>
                   <input
@@ -82,7 +101,7 @@ function Dannie(props) {
                   />
                 </div>
                 <div className="text-center">
-                  <button type="submit" className="btn btn-success">Сохранить</button>
+                  <button type="submit" className="btn btn-success">Сохранить изменения</button>
                   <button
                     type="button"
                     className="btn btn-secondary ms-2"
@@ -120,7 +139,7 @@ function Dannie(props) {
                 </div>
                 <div className="text-center">
                   <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-                    Редактировать профиль
+                    Изменить
                   </button>
                 </div>
               </>
@@ -134,17 +153,7 @@ function Dannie(props) {
           </div>
         </div>
       </div>
-
-      
-
-      <div className="modal" id="modal">
-        <div className="modal-content">
-          <span className="close">×</span>
-          <h2 id="modal-title" />
-          <p id="modal-description" />
-        </div>
-      </div>
-    </div>  
+    </div>
   );
 }
 
