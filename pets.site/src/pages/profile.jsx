@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dannie from "../components/dannie";
-import Obyav from "../components/obyav";
+import MyAds from "../components/myads";
 import '../components/styles/profile.css';
 
 const Profile =  () => {
@@ -26,7 +26,7 @@ fetch("https://pets.сделай.site/api/users", requestOptions)
   return ( 
     <div>
       <Dannie data={user}/>
-      <Obyav/>
+      <MyAds/>
     </div>
    );
 }

@@ -36,7 +36,7 @@ function Dannie(props) {
     navigate('/');  // Перенаправляем на главную страницу
   };
 
-  // Функция для сохранения изменений и отправки их на сервер
+  // Функция для сохранения изменений email
   const saveChanges = () => {
     // Сохраняем email и phone в localStorage
     localStorage.setItem('email', email);
@@ -64,6 +64,32 @@ function Dannie(props) {
       .catch((error) => {
         alert('Ошибка: ' + error.message);
       });
+  };
+
+  // Функция для сохранения изменений телефона
+  const savePhoneChanges = async () => {
+    try {
+      const responsePhone = await fetch("https://pets.сделай.site/api/users/phone", {
+        method: "PATCH", // Используем PATCH для обновления данных
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Если требуется токен для авторизации
+        },
+        body: JSON.stringify({ phone }),
+      });
+    
+      if (responsePhone.ok) {
+        localStorage.setItem('phone', phone); // Сохраняем phone в localStorage
+      } else {
+        alert('Ошибка при обновлении телефона.');
+        return;
+      }
+    
+      alert('Изменения сохранены!');
+      setIsEditing(false); // Закрываем форму редактирования email
+    } catch (error) {
+      alert('Произошла ошибка при обновлении данных. Попробуйте снова.');
+    }
   };
 
   return (
@@ -101,7 +127,7 @@ function Dannie(props) {
                   />
                 </div>
                 <div className="text-center">
-                  <button type="submit" className="btn btn-success">Сохранить изменения</button>
+                  <button type="submit" className="btn btn-success" onClick={savePhoneChanges}>Сохранить изменения</button>
                   <button
                     type="button"
                     className="btn btn-secondary ms-2"

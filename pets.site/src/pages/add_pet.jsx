@@ -1,11 +1,11 @@
 import React from "react";
-import Dobav from "../components/dobav";
+import AddPetForm from "../components/addpetForm";
 import '../components/styles/add_pet.css';
 
 function Add_pet() {
   return ( 
     <div>
-      <Dobav/>
+      <AddPetForm/>
     </div>
    );
 }

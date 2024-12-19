@@ -18,6 +18,12 @@ const Login123 = () => {
     });
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const auth = (e) => {
     e.preventDefault();
     const form = document.getElementById('form');
@@ -197,16 +203,26 @@ const Login123 = () => {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="exampleInputPassword1" className="form-label">Пароль</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="exampleInputPassword1"
-                    value={user.password}
-                    onChange={handleChange}
-                    name="password"
-                    required
-                  />
+                  <div className="input-group">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="form-control"
+                      id="exampleInputPassword1"
+                      value={user.password}
+                      onChange={handleChange}
+                      name="password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? "Скрыть" : "Показать"}
+                    </button>
+                  </div>
                 </div>
+
                 <div className="mb-3 form-check">
                   <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                   <label className="form-check-label" htmlFor="exampleCheck1">Запомнить меня</label>

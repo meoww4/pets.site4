@@ -1,160 +1,249 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-function Rega() {
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        confirm: false,
-    });
-    const navigate = useNavigate();
+const Rega = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
+    confirm: false,
+  });
 
-    const handleChange = (e) => {
-        const { id, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [id]: type === 'checkbox' ? checked : value,
-        });
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Валидация данных
+  const validate = () => {
+    const errors = {};
+    const nameRegex = /^[А-Яа-яЁё\s-]+$/;
+    const phoneRegex = /^\+7\d{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{7,}$/;
+
+    if (!formData.name.trim() || !nameRegex.test(formData.name)) {
+      errors.name = 'Имя может содержать только кириллицу, пробелы и дефисы.';
+    }
+
+    if (!formData.phone || !phoneRegex.test(formData.phone)) {
+      errors.phone = 'Телефон должен быть в формате +7XXXXXXXXXX.';
+    }
+
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      errors.email = 'Введите корректный email.';
+    }
+
+    if (!formData.password || !passwordRegex.test(formData.password)) {
+      errors.password =
+        'Пароль должен быть не менее 7 символов и содержать заглавные, строчные буквы и цифры.';
+    }
+
+    if (formData.password !== formData.passwordConfirmation) {
+      errors.passwordConfirmation = 'Пароли не совпадают.';
+    }
+
+    if (!formData.confirm) {
+      errors.confirm = 'Необходимо согласие на обработку данных.';
+    }
+
+    return errors;
+  };
+
+  // Обработчик отправки формы
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Очистка сообщений
+    setErrors({});
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    // Формирование тела запроса
+    const requestBody = {
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      password: formData.password,
+      password_confirmation: formData.passwordConfirmation,
+      confirm: formData.confirm ? 1 : 0,
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const form = e.target;
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    };
 
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
+    try {
+      const response = await fetch('https://pets.сделай.site/api/register', requestOptions);
 
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const raw = JSON.stringify(formData);
-        const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw};
-            fetch("https://pets.сделай.site/api/register", requestOptions)
-                .then((response) => response.status)
-                .then((result) => {console.log(result)
-                if (result==204){
-                alert('Регистрация успешна!');} else {
-    alert('Такой адрес электронной почты уже занят.')
-}})
-          };
-          
-    return (
-        <div>
-            <main className="content-container-login">
-                <form id="registrationForm" className="row g-3 needs-validation" onSubmit={handleSubmit} noValidate>
-                    <div className="mb-3">
-                        <p className="text-start fs-3">Регистрация</p>
-                        <label htmlFor="name" className="form-label">Имя</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            placeholder='Иван'
-                            pattern="^[А-Яа-яЁё ]{2,20}$"
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">
-                            Имя должно содержать только кириллицу, пробел и дефис от 2 до 20 символов.
-                        </div>
-                    </div>
+      if (response.ok) {
+        console.log(response);
+        setSuccessMessage('Регистрация прошла успешно!');
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          password: '',
+          passwordConfirmation: '',
+          confirm: false,
+        });
+      } else if (response.status === 422) {
+        const errorData = await response.json();
+        const serverErrors = errorData.error?.errors || {};
+        setErrors(serverErrors);
+      } else {
+        setErrorMessage('Произошла ошибка. Пожалуйста, попробуйте позже.');
+      }
+    } catch (error) {
+      setErrorMessage('Ошибка сети. Проверьте соединение.');
+    }
+  };
 
-                    <div className="mb-3">
-                        <label htmlFor="phone" className="form-label">Телефон</label>
-                        <input
-                            type="tel"
-                            className="form-control"
-                            id="phone"
-                            pattern="^\+7\d{3}\d{3}\d{2}\d{2}$"
-                            placeholder="+79991234567"
-                            required
-                            value={formData.phone}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">
-                            Укажите номер телефона в правильном формате.
-                        </div>
-                    </div>
+  // Обработчик изменения полей
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
 
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            placeholder='user@user.com'
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">
-                            Укажите корректный email.
-                        </div>
-                    </div>
+  return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '90vh' }}>
+      <form
+        id="registrationForm"
+        className="p-4 border rounded w-50 bg-white shadow"
+        onSubmit={handleSubmit}
+        style={{
+          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Добавление тени
+          marginTop: '-50px', // Поднимаем форму вверх
+        }}
+      >
+        <h3 className="text-center mb-4">Регистрация</h3>
 
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Пароль</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="password"
-                            pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{7,}"
-                            required
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">
-                            Пароль должен содержать минимум 7 символов, включая 1 цифру, 1 строчную и 1 заглавную букву.
-                        </div>
-                    </div>
+        {successMessage && <div className="alert alert-success">{successMessage}</div>}
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-                    <div className="mb-3">
-                        <label htmlFor="confirmPassword" className="form-label">Повторите пароль</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="confirmPassword"
-                            required
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">
-                            Пароли должны совпадать.
-                        </div>
-                    </div>
-
-                    <div className="mb-3 form-check">
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="confirm"
-                            required
-                            checked={formData.confirm}
-                            onChange={handleChange}
-                        />
-                        <label className="form-check-label" htmlFor="confirm">
-                            Согласен на обработку персональных данных
-                        </label>
-                        <div className="invalid-feedback">
-                            Вы должны согласиться перед отправкой формы.
-                        </div>
-                    </div>
-
-                    <button type="submit" className="btn btn-primary btn-custom">
-                        Зарегистрироваться
-                    </button>
-                </form>
-            </main>
+        {/* Имя */}
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">
+            Имя
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Введите имя"
+          />
+          {errors.name && <div className="text-danger">{errors.name}</div>}
         </div>
-    );
-}
+
+        {/* Телефон */}
+        <div className="mb-3">
+          <label htmlFor="phone" className="form-label">
+            Телефон
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+7XXXXXXXXXX"
+          />
+          {errors.phone && <div className="text-danger">{errors.phone}</div>}
+        </div>
+
+        {/* Email */}
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="example@example.com"
+          />
+          {errors.email && <div className="text-danger">{errors.email}</div>}
+        </div>
+
+        {/* Пароль */}
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Пароль
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Введите пароль"
+          />
+          {errors.password && <div className="text-danger">{errors.password}</div>}
+        </div>
+
+        {/* Подтверждение пароля */}
+        <div className="mb-3">
+          <label htmlFor="password_confirmation" className="form-label">
+            Подтвердите пароль
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password_confirmation"
+            name="passwordConfirmation"
+            value={formData.passwordConfirmation}
+            onChange={handleChange}
+            placeholder="Повторите пароль"
+          />
+          {errors.passwordConfirmation && (
+            <div className="text-danger">{errors.passwordConfirmation}</div>
+          )}
+        </div>
+
+        {/* Согласие */}
+        <div className="form-check mb-3">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="confirm"
+            name="confirm"
+            checked={formData.confirm}
+            onChange={handleChange}
+          />
+          <label className="form-check-label" htmlFor="confirm">
+            Согласен на обработку персональных данных
+          </label>
+          {errors.confirm && <div className="text-danger">{errors.confirm}</div>}
+        </div>
+
+        {/* Кнопка отправки */}
+        <button type="submit" className="btn btn-primary w-100">
+          Зарегистрироваться
+        </button>
+      </form>
+    </div>
+  );
+};
 
 export default Rega;
