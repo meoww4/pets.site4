@@ -74,7 +74,7 @@ const Login123 = () => {
       });
   };
 
-  // Debounce function
+  // Improved debounce for search query
   const debounce = (func, delay) => {
     let timer;
     return (...args) => {
@@ -111,12 +111,14 @@ const Login123 = () => {
       });
   };
 
-  const debouncedFetchSuggestions = debounce(fetchSuggestions, 1000);
+  // Debounced fetch
+  const debouncedFetchSuggestions = debounce(fetchSuggestions, 500);
 
+  // Handle search input change
   const handleSearchQueryChange = (e) => {
     const value = e.target.value;
-    setSearchQuery(value);
-    debouncedFetchSuggestions(value);
+    setSearchQuery(value);  // Directly update searchQuery state
+    debouncedFetchSuggestions(value);  // Only debounce the search fetch
   };
 
   const handleSearch = (e) => {
@@ -241,7 +243,11 @@ const Login123 = () => {
         <div className="suggestions">
           <ul>
             {suggestions.map((suggestion) => (
-              <li key={suggestion.id}>{suggestion.description}</li>
+              <li key={suggestion.id}>
+                <Link to={`/card/${suggestion.id}`} className="suggestion-link">
+                  {suggestion.description}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
