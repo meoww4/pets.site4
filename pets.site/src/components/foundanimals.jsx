@@ -11,6 +11,14 @@ function AnimalCardsContainer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const Preloader = () => (
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Загрузка...</span>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     const loadPets = async () => {
       try {
@@ -23,10 +31,9 @@ function AnimalCardsContainer() {
         } else {
           throw new Error('Некорректный формат данных');
         }
-
-        setLoading(false);
       } catch (err) {
         setError('Ошибка загрузки данных');
+      } finally {
         setLoading(false);
       }
     };
@@ -62,7 +69,7 @@ function AnimalCardsContainer() {
   };
 
   if (loading) {
-    return <div>Загрузка...</div>;
+    return <Preloader />;
   }
 
   if (error) {

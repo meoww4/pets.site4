@@ -35,7 +35,7 @@ function Dobav() {
     <div className="content-container-add-pet">
       <form
         id="petForm"
-        className={`p-4 border rounded bg-light needs-validation ${formValidated ? 'was-validated' : ''}`}
+        className={`needs-validation ${formValidated ? 'was-validated' : ''}`}
         onSubmit={handleSubmit}
         noValidate
       >
@@ -111,6 +111,19 @@ function Dobav() {
           />
           <div className="invalid-feedback">Пожалуйста, укажите вид животного.</div>
         </div>
+
+        <div className="mb-3">
+          <label htmlFor="mark" className="form-label">Номер чипа</label>
+          <input
+            type="text"
+            className="form-control"
+            id="mark"
+            placeholder="1234AB"
+            value={mark}
+            onChange={(e) => setMark(e.target.value)}
+          />
+        </div>
+
 
         <div className="mb-3">
           <label htmlFor="image" className="form-label">Фото животного (обязательное)</label>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Slider from "../components/slider";
-import Card from "../components/card"; // Убедитесь, что путь корректный
+import Card from "../components/card"; 
 import Two from "../components/Two";
 import Three from "../components/Three";
 
 const Main = () => {
-  const [pet, setPet] = useState([]); // Правильная форма useState
+  const [pet, setPet] = useState([]); 
 
   useEffect(() => {
     load();
@@ -16,7 +16,7 @@ const Main = () => {
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
-        setPet(result.data.orders); // Корректное обновление состояния
+        setPet(result.data.orders);
       });
   };
 
